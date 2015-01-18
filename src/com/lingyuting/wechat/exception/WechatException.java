@@ -2,24 +2,25 @@ package com.lingyuting.wechat.exception;
 
 public class WechatException extends RuntimeException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	public WechatException() {
-		super();
-	}
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-	public WechatException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public WechatException() {
+        super();
+    }
 
-	public WechatException(String message) {
-		super(message);
-	}
+    public WechatException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public WechatException(Throwable cause) {
-		super(cause);
-	}
+    public WechatException(String message) {
+        super(message);
+    }
+
+    public WechatException(Throwable cause) {
+        super(cause);
+    }
 
 }

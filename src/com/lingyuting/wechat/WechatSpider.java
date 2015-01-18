@@ -5,33 +5,33 @@ import java.util.List;
 import com.lingyuting.wechat.util.WechatUtil;
 
 public class WechatSpider extends WechatUtil {
-	
-	public WechatSpider(String id) {
-		super.setId(id);
-		super.excute();
-	}
 
-	public String getUrl() {
-		return model.getUrl();
-	}
+    public WechatSpider(String id) {
+        super.setId(id);
+        super.excute();
+    }
 
-	public String getTitle() {
-		return model.getTitle();
-	}
+    public String getUrl() {
+        return model.getUrl();
+    }
 
-	public String getContent() {
-		return model.getContent();
-	}
+    public String getTitle() {
+        return model.getTitle();
+    }
 
-	public List<String> getImgs() {
-		return model.getImages();
-	}
+    public String getContent() {
+        return model.getContent();
+    }
 
-	public String getDate() {
-		return model.getDate();
-	}
+    public List<String> getImgs() {
+        return model.getImages();
+    }
 
-	public String getUser() {
-		return model.getUser();
-	}
+    public String getDate() {
+        return model.getDate();
+    }
+
+    public String getUser() {
+        return model.getUser();
+    }
 }
