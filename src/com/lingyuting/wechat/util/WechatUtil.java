@@ -73,15 +73,15 @@ public abstract class WechatUtil {
         Element topicUrl = doc.select("url").first();
         topicUrl.select("title1").remove();
         String url = topicUrl.text();
-        this.model = fetchContent(url);
+        fetchContent(url);
     }
 
-    public Topic fetchContent(String url) {
+    public void fetchContent(String url) {
         Document doc = getDoc(url);
         if (null == doc) {
-            return null;
+            return;
         }
-        Topic model = new Topic();
+        model = new Topic();
         String title = doc.select("#activity-name").first().text();
         Elements imagesDom = doc.select("#js_content img[data-src]");
         String content = doc.select("#js_content").first().html();
@@ -98,7 +98,6 @@ public abstract class WechatUtil {
         model.setTitle(title);
         model.setDate(date);
         model.setUser(user);
-        return model;
     }
 
 }
