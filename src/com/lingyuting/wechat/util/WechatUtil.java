@@ -146,7 +146,7 @@ public abstract class WechatUtil {
         ListIterator<Element> topicUrls = doc.select("url").listIterator();
         if (!topicUrls.hasNext()) {
             throw new WechatException(
-                    "make sure the openId is right, otherwise no topcs in this wechat account");
+                    "make sure the openId is right, otherwise no topics in this wechat account");
         }
         int start = 1;
         while (topicUrls.hasNext()) {
@@ -164,6 +164,37 @@ public abstract class WechatUtil {
         }
 
         return list;
+    }
+
+    public List<Document> getDocuments(int limit) {
+        Document doc = getDoc();
+        if (null == doc) {
+            throw new WechatException("unknown error");
+        }
+        List<Document> docs = new ArrayList<Document>();
+
+        ListIterator<Element> topicUrls = doc.select("url").listIterator();
+        if (!topicUrls.hasNext()) {
+            throw new WechatException(
+                    "make sure the openId is right, otherwise no topics in this wechat account");
+        }
+
+        int start = 1;
+        while (topicUrls.hasNext()) {
+            Element topicUrl = topicUrls.next();
+            topicUrl.select("title1").remove();
+            String url = topicUrl.text();
+            Document topicDoc = getDoc(url);
+            if (null != topicDoc) {
+                docs.add(topicDoc);
+            }
+            topicDoc.attr("originUrl", url);
+            if (limit <= start) {
+                break;
+            }
+            start++;
+        }
+        return docs;
     }
 
 }

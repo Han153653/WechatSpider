@@ -2,6 +2,10 @@ package com.lingyuting.wechat;
 
 import java.util.List;
 
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import com.lingyuting.wechat.models.Topic;
 import com.lingyuting.wechat.util.WechatUtil;
 
@@ -35,4 +39,9 @@ public class WechatSpider extends WechatUtil {
     public List<Topic> getTopics() {
         return super.getTopics(this.limit);
     }
+
+    public List<Document> getDocs() {
+        return super.getDocuments(this.limit);
+    }
+
 }
