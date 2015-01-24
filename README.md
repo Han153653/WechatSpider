@@ -4,11 +4,12 @@
 ##如何使用
 
 * 首先导入 wechat.jar 和 jsoup.jar 包到工程目录
-* 实例化类 `WechatSpider spider = new WechatSpider("oIWsFt1cKphwPhDydMD0b_fi7n80");` 参数为微信公共号的openId
-* 然后`System.out.println(spider.getTitle());` 可以获取标题，作者，时间，内容，url，以及文章内图片等信息
+* 实例化类 `WechatSpider spider = new WechatSpider("oIWsFt1cKphwPhDydMD0b_fi7n80", 5);` 参数为微信公共号的openId和想要获取的条数
+* 然后`spider.getTopics();` 可以获取标题，作者，时间，内容，url，以及文章内图片等信息的列表
 
 ##程序健壮性
-* 暂未测试，可能会有验证码一类的情况出现，可以通过cookie的方式解决。等发现问题了会做进一步的修改
+* 运行一个月，每天抓取100条左右，暂时没有异常出现
+* 微信推送的文章内的图片都是webp格式,在IOS上显示会有一定的问题，如果下载到自己本地服务器记得转格式
 
 ##有问题反馈
 在使用中有任何问题，欢迎反馈给我，可以用以下联系方式跟我交流
