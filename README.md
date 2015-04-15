@@ -10,7 +10,7 @@
 ##如何把微信的文章保存到MySQL
 * WechatSpider 可以通过 getDocs 返回 jsoup的Document对象列表
 
-```bash
+```java
     WechatSpider spider = new WechatSpider("oIWsFt507pxIH3FW5d4DvLDLJHfA", 5);
     List<Document> docs = spider.getDocs();
     for (Document doc : docs) {
@@ -29,6 +29,23 @@
         String topic = content.html();
         //TODO inert into mysql
     }
+```
+
+* WechatSpider 获取某个公共号全部的文章
+```java
+		WechatSpider spider = new WechatSpider("oIWsFt3vXtE-Bsg2MvX8Nebm-p2g");// 360手机卫士
+        int page = 1;
+        while (true) {
+            List<Topic> topics = spider.getPageTopics(page);
+            if (topics.size() == 0) {
+                break;
+            }
+            for (Topic topic : topics) {
+                System.out.println(topic.getTitle());
+				//your business
+            }
+            page++;
+        }
 ```
 
 ##程序健壮性

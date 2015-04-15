@@ -3,8 +3,6 @@ package com.lingyuting.wechat;
 import java.util.List;
 
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import com.lingyuting.wechat.models.Topic;
 import com.lingyuting.wechat.util.WechatUtil;
@@ -14,10 +12,14 @@ public class WechatSpider extends WechatUtil {
     private int limit = 5;
 
     /**
+     * to get page documents use this construction
+     * 
+     * <pre>
+     *  new WechatSpider("123").getPageDocs(1); 获取第一页的的全部文章
+     * </pre>
      * 
      * @param id
      *            微信公共号的openId
-     * @deprecated for you can use new WechatSpider(String id, int limit)
      */
     public WechatSpider(String id) {
         super.setId(id);
@@ -42,6 +44,29 @@ public class WechatSpider extends WechatUtil {
 
     public List<Document> getDocs() {
         return super.getDocuments(this.limit);
+    }
+
+    public List<Topic> getPageTopics(int page) {
+        return super.getPageTopics(page);
+    }
+
+    public List<Document> getPageDocs(int page) {
+        return super.getPageDocuments(page);
+    }
+
+    public static void main(String[] args) {
+        WechatSpider spider = new WechatSpider("oIWsFt3vXtE-Bsg2MvX8Nebm-p2g");// 360手机卫士
+        int page = 1;
+        while (true) {
+            List<Topic> topics = spider.getPageTopics(page);
+            if (topics.size() == 0) {
+                break;
+            }
+            for (Topic topic : topics) {
+                System.out.println(topic.getTitle());
+            }
+            page++;
+        }
     }
 
 }

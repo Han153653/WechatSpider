@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -17,6 +19,7 @@ public abstract class WechatUtil {
 
     private String id;
     protected Topic model;
+    private int totalpages = 0;
 
     public void setId(String id) {
         this.id = id;
@@ -30,6 +33,24 @@ public abstract class WechatUtil {
         return this.id;
     }
 
+    private int getTotalPage(String str) {
+        if (0 != totalpages) {
+            return totalpages;
+        }
+        Pattern pattern = Pattern.compile("totalPages\":([0-9]*)");
+        Matcher matcher = pattern.matcher(str);
+
+        while (matcher.find()) {
+            totalpages = Integer.parseInt(matcher.group(1));
+        }
+        return totalpages;
+    }
+
+    /**
+     * 获取第一页的doc对象
+     * 
+     * @return
+     */
     protected Document getDoc() {
         String url = makeUrl();
         try {
@@ -45,15 +66,23 @@ public abstract class WechatUtil {
         }
     }
 
+    /**
+     * 获取指定url的doc对象
+     * 
+     * @param url
+     * @return
+     */
     protected Document getDoc(String url) {
         try {
             return Jsoup
                     .connect(url)
+                    .ignoreContentType(true)
                     .timeout(10000)
                     .header("User-Agent",
                             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.131 Safari/537.36")
                     .get();
         } catch (IOException e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -63,6 +92,13 @@ public abstract class WechatUtil {
             throw new WechatException("must set id first");
         }
         return "http://weixin.sogou.com/gzhjs?openid=" + id;
+    }
+
+    protected String makeUrl(int page) {
+        if (null == id || "".equals(id)) {
+            throw new WechatException("must set id first");
+        }
+        return "http://weixin.sogou.com/gzhjs?openid=" + id + "&page=" + page;
     }
 
     protected void excute() {
@@ -166,6 +202,13 @@ public abstract class WechatUtil {
         return list;
     }
 
+    /**
+     * 获取最新指定条数的文章doc对象
+     * 
+     * @param limit
+     *            条数
+     * @return
+     */
     public List<Document> getDocuments(int limit) {
         Document doc = getDoc();
         if (null == doc) {
@@ -193,6 +236,91 @@ public abstract class WechatUtil {
                 break;
             }
             start++;
+        }
+        return docs;
+    }
+
+    /**
+     * 获取指定页的全部话题
+     * 
+     * @param limit
+     * @return
+     */
+    protected List<Topic> getPageTopics(int page) {
+        List<Topic> list = new ArrayList<Topic>();
+        String url = makeUrl(page);
+        Document doc = getDoc(url);
+        if (null == doc) {
+            throw new WechatException("unknown error");
+        }
+
+        if (0 != totalpages && page > totalpages) {
+            return list;
+        }
+
+        if (0 == totalpages) {
+            getTotalPage(doc.select("pagesize").last().html().toString());
+            if (page > totalpages) {
+                return list;
+            }
+        }
+
+        ListIterator<Element> topicUrls = doc.select("url").listIterator();
+        if (null == topicUrls || !topicUrls.hasNext()) {
+            throw new WechatException(
+                    "make sure the openId is right, otherwise no topics in this wechat account");
+        }
+        while (topicUrls.hasNext()) {
+            Element topicUrl = topicUrls.next();
+            topicUrl.select("title1").remove();
+            Topic topic = getTopicByUrl(topicUrl.text());
+            if (null != topic) {
+                list.add(topic);
+            }
+        }
+
+        return list;
+    }
+
+    /**
+     * 获取指定页的文章doc对象
+     * 
+     * @param page
+     *            当前页数
+     * @return
+     */
+    public List<Document> getPageDocuments(int page) {
+        String url = makeUrl(page);
+        Document doc = getDoc(url);
+        if (null == doc) {
+            throw new WechatException("unknown error");
+        }
+        List<Document> docs = new ArrayList<Document>();
+        if (0 != totalpages && page > totalpages) {
+            return docs;
+        }
+
+        if (0 != totalpages) {
+            getTotalPage(doc.select("pagesize").last().html().toString());
+            if (page > totalpages) {
+                return docs;
+            }
+        }
+
+        ListIterator<Element> topicUrls = doc.select("url").listIterator();
+        if (!topicUrls.hasNext()) {
+            throw new WechatException(
+                    "make sure the openId is right, otherwise no topics in this wechat account");
+        }
+
+        while (topicUrls.hasNext()) {
+            Element topicUrl = topicUrls.next();
+            topicUrl.select("title1").remove();
+            Document topicDoc = getDoc(topicUrl.text());
+            if (null != topicDoc) {
+                docs.add(topicDoc);
+            }
+            topicDoc.attr("originUrl", url);
         }
         return docs;
     }
