@@ -21,7 +21,7 @@
         Elements imagesDom = content.select("img[data-src]");
         for (Element img : imagesDom) {
             String file = FileUtil.loadImage(img.attr("data-src"));
-            if (null == file || "" == file) {
+            if (null == file || "".equals(file)) {
                 continue;
             }
             img.attr("src", PicUtil.imgServer + "/" + file);
