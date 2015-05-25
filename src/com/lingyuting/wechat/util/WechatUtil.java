@@ -1,11 +1,17 @@
 package com.lingyuting.wechat.util;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,6 +26,7 @@ public abstract class WechatUtil {
     private String id;
     protected Topic model;
     private int totalpages = 0;
+    private String sogouParam = "";
 
     public void setId(String id) {
         this.id = id;
@@ -52,6 +59,7 @@ public abstract class WechatUtil {
      * @return
      */
     protected Document getDoc() {
+
         String url = makeUrl();
         try {
             return Jsoup
@@ -60,6 +68,8 @@ public abstract class WechatUtil {
                     .ignoreContentType(true)
                     .header("User-Agent",
                             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.131 Safari/537.36")
+                    .header("Cookie",
+                            "ABTEST=8|1430710665|v1; SUID=F55370722708930A000000005546E989; PHPSESSID=0hk2d8cl4128niajvb4f4asfq6; SUIR=1430710665; SUID=F55370724FC80D0A000000005546E989; SNUID=D47250532024351871AD39CB21F3D59C; SUV=00EA70CE727053F55546F1207367B700; weixinIndexVisited=1; wuid=AAGjZr7TCQAAAAqUKHWrjwEAkwA=; ld=nAVZ9yllll2qSs4glllllVqpDNtllllltXxFdyllll9lllllxllll5@@@@@@@@@@; usid=pz2gIdtBRiERY8lB; sct=2; wapsogou_qq_nickname=; IPLOC=CN3200")
                     .get();
         } catch (IOException e) {
             return null;
@@ -80,6 +90,8 @@ public abstract class WechatUtil {
                     .timeout(10000)
                     .header("User-Agent",
                             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.131 Safari/537.36")
+                    .header("Cookie",
+                            "ABTEST=8|1430710665|v1; SUID=F55370722708930A000000005546E989; PHPSESSID=0hk2d8cl4128niajvb4f4asfq6; SUIR=1430710665; SUID=F55370724FC80D0A000000005546E989; SNUID=D47250532024351871AD39CB21F3D59C; SUV=00EA70CE727053F55546F1207367B700; weixinIndexVisited=1; wuid=AAGjZr7TCQAAAAqUKHWrjwEAkwA=; ld=nAVZ9yllll2qSs4glllllVqpDNtllllltXxFdyllll9lllllxllll5@@@@@@@@@@; usid=pz2gIdtBRiERY8lB; sct=2; wapsogou_qq_nickname=; IPLOC=CN3200")
                     .get();
         } catch (IOException e) {
             e.printStackTrace();
@@ -87,18 +99,42 @@ public abstract class WechatUtil {
         }
     }
 
+    /**
+     * 获取搜狗url的参数
+     */
+    public String getSogouParam() {
+        if ("" != this.sogouParam) {
+            return this.sogouParam;
+        }
+        ScriptEngineManager sem = new ScriptEngineManager();
+        ScriptEngine se = sem.getEngineByExtension("js");
+        try {
+            se.eval(new FileReader(this.getClass().getResource("/url.js")
+                    .getPath()));
+            se.eval("eval(\"window.SogouEncrypt.setKv('8d11ae022be','1')\")");
+            this.sogouParam = (String) se
+                    .eval("eval(\"window.SogouEncrypt.encryptquery('"
+                            + this.getId() + "','sogou')\")");
+        } catch (FileNotFoundException | ScriptException e) {
+            System.out.println(e);
+        }
+        return this.sogouParam;
+    }
+
     protected String makeUrl() {
         if (null == id || "".equals(id)) {
             throw new WechatException("must set id first");
         }
-        return "http://weixin.sogou.com/gzhjs?openid=" + id;
+        String urlParams = this.getSogouParam();
+        return "http://weixin.sogou.com/gzhjs?cb=sogou.weixin.gzhcb&" + urlParams;
     }
 
     protected String makeUrl(int page) {
         if (null == id || "".equals(id)) {
             throw new WechatException("must set id first");
         }
-        return "http://weixin.sogou.com/gzhjs?openid=" + id + "&page=" + page;
+        String urlParams = this.getSogouParam();
+        return "http://weixin.sogou.com/gzhjs?cb=sogou.weixin.gzhcb&" + urlParams + "&page=" + page;
     }
 
     protected void excute() {
@@ -292,6 +328,7 @@ public abstract class WechatUtil {
     public List<Document> getPageDocuments(int page) {
         String url = makeUrl(page);
         Document doc = getDoc(url);
+        System.out.println(url);
         if (null == doc) {
             throw new WechatException("unknown error");
         }

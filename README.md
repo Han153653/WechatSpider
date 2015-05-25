@@ -32,6 +32,7 @@
 ```
 
 * WechatSpider 获取某个公共号全部的文章
+
 ```java
 		WechatSpider spider = new WechatSpider("oIWsFt3vXtE-Bsg2MvX8Nebm-p2g");// 360手机卫士
         int page = 1;

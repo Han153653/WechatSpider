@@ -23,7 +23,7 @@ public class WechatSpider extends WechatUtil {
      */
     public WechatSpider(String id) {
         super.setId(id);
-        super.excute();
+        //super.excute();
     }
 
     /**
@@ -32,6 +32,7 @@ public class WechatSpider extends WechatUtil {
      *            微信公共号的openId
      * @param limit
      *            最多获取的条数
+     * @deprecated 参考最佳实践
      */
     public WechatSpider(String id, int limit) {
         super.setId(id);
@@ -58,6 +59,7 @@ public class WechatSpider extends WechatUtil {
         WechatSpider spider = new WechatSpider("oIWsFt3vXtE-Bsg2MvX8Nebm-p2g");// 360手机卫士
         int page = 1;
         while (true) {
+            System.out.println(page + "----------");
             List<Topic> topics = spider.getPageTopics(page);
             if (topics.size() == 0) {
                 break;
