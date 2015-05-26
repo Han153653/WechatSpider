@@ -1,3 +1,7 @@
+/**
+ * 来自搜狗微信搜索页面,用到里面的SogouEncrypt类，如果不可用了大家可以尝试去把搜狗页面的js替换下面的内容
+ * @date 2015-05-26 10:46:55
+ */
 window = {};
 window.CryptoJS = window.CryptoJS ||
 function(o, e) {

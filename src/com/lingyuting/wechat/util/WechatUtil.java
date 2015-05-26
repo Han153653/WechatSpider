@@ -103,7 +103,7 @@ public abstract class WechatUtil {
      * 获取搜狗url的参数
      */
     public String getSogouParam() {
-        if ("" != this.sogouParam) {
+        if (!"".equals(this.sogouParam)) {
             return this.sogouParam;
         }
         ScriptEngineManager sem = new ScriptEngineManager();

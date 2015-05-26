@@ -12,8 +12,6 @@ public class WechatSpider extends WechatUtil {
     private int limit = 5;
 
     /**
-     * to get page documents use this construction
-     * 
      * <pre>
      *  new WechatSpider("123").getPageDocs(1); 获取第一页的的全部文章
      * </pre>
@@ -27,12 +25,12 @@ public class WechatSpider extends WechatUtil {
     }
 
     /**
-     * 
+     * 不能跨页获取
      * @param id
      *            微信公共号的openId
      * @param limit
      *            最多获取的条数
-     * @deprecated 参考最佳实践
+     * @deprecated 参考最佳实践 main()
      */
     public WechatSpider(String id, int limit) {
         super.setId(id);
